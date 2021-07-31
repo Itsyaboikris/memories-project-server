@@ -1,6 +1,18 @@
 import mongoose from 'mongoose';
 import PostMessage from "../models/postMessage.js";
 
+export const getPost = async (req, res) => {
+    try {
+        const {id} = req.params;
+
+        const post = await PostMessage.findById(id);
+
+        res.status(200).json(post);
+    } catch (e) {
+        res.status(404).json({message: e.message});
+    }
+};
+
 export const getPosts = async (req, res) => {
     try {
         const {page} = req.query;
@@ -95,5 +107,21 @@ export const likePost = async (req, res) => {
         res.json(updatedPost);
     } catch (e) {
         console.log(e.message)
+    }
+};
+
+export const commentPost = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {value} = req.body;
+
+        const post = await PostMessage.findById(id);
+
+        post.comments.push(value);
+
+        const updatedPost = await PostMessage.findByIdAndUpdate(id, post, {new: true});
+        res.json(updatedPost)
+    } catch (e) {
+        console.log(e.message);
     }
 };
